@@ -1,4 +1,4 @@
-##Image compression algorithm using vectors
+## Image compression algorithm using vectors
 
 Run using:
 
