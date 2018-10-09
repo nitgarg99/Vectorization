@@ -2,7 +2,7 @@
 
 Run using:
 
-```python3 v.py 'filename.ext' #of_vectors mode ````
+```python3 v.py 'filename.ext' #of_vectors mode ```
 
 Mode can be any integer from 1-3
 extensions supported are only .raw and .rgb
