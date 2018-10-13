@@ -12,8 +12,8 @@ def openColor(file_name):
         g = f.read(352*288)
         b = f.read(352*288)
 
-        rgb_pixels = [[(r[i*288+j], g[i*288+j], b[i*288+j])
-                        for j in range(288)] for i in range(352)]
+        rgb_pixels = [[(r[i*352+j], g[i*352+j], b[i*352+j])
+                        for j in range(352)] for i in range(288)]
         
         '''
         r_band = Image.frombytes('L', (352,288), r)
@@ -30,7 +30,7 @@ def openColor(file_name):
 def openGrey(file_name):
     with open(file_name, 'rb') as f:
         im_buffer = f.read()
-        grey_pixels = [[im_buffer[i*288+j] for j in range(288)] for i in range(352)]
+        grey_pixels = [[im_buffer[i*352+j] for j in range(352)] for i in range(288)]
         
     
     return grey_pixels
@@ -164,8 +164,6 @@ def color_cluster(codes, vectors):
             
 def quantize(pixels, codes, mode):
     new_pixels = [[0] * len(pixels[i]) for i in range(len(pixels))]
-    print(len(new_pixels), len(new_pixels[0]))
-    print(len(pixels), len(pixels[0]))
     if mode == 1:
         i = 0
         j = 0
@@ -249,8 +247,6 @@ def quantize(pixels, codes, mode):
 
 def color_quantize(pixels, codes, mode):
     new_pixels = [[0] * len(pixels[i]) for i in range(len(pixels))]
-    print(len(new_pixels), len(new_pixels[0]))
-    print(len(pixels), len(pixels[0]))
     if mode == 1:
         i = 0
         j = 0
@@ -348,14 +344,18 @@ if file_name[-3:] == 'rgb':
     vectors = vectorize(pixels, mode)
     codes = init_codes(vectors,N)
     converged = False
+    iteration = 0
     while not converged:
+        iteration += 1
+        print(iteration)
         new_codes = color_cluster(codes, vectors)
         converged = True
         for i in range(len(codes)):
             d = color_distance(new_codes[i],codes[i])
             ### Error value for k-means
-            if d > 5:
+            if d > 3:
                 converged = False
+                break
         codes = new_codes
     final_codes = [[[] for j in range(len(codes[i]))] for i in range(len(codes))]
     for i in range(len(codes)):
@@ -387,11 +387,11 @@ elif file_name[-3:] == 'raw':
         for i in range(len(codes)):
             d = distance(new_codes[i],codes[i])
             ### Error value for k-means
-            if d > 5:
+            if d > 2:
                 converged = False
+                break
         codes = new_codes
     qpixels = quantize(pixels, codes, mode)
-    print(codes)
 
 
     raw_data = [pixel for row in pixels for pixel in row]
